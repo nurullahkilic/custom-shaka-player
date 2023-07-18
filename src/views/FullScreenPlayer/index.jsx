@@ -39,8 +39,6 @@ const FullScreenPlayer = () => {
   });
   const [state, controls] = useVideoControls({ ref: videoRef });
 
-  console.log(state);
-
   const handleLoadedMetadata = () => {
     const video = videoRef?.current;
     if (!video) return;
