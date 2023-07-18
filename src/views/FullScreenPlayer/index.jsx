@@ -30,7 +30,7 @@ import {
 const FullScreenPlayer = () => {
   const handle = useFullScreenHandle();
 
-  let videoId = useQuery().get("v");
+  let videoId = useQuery().get("v") || 4135028;
   const video = videos.find((video) => video.id === Number(videoId));
 
   const videoRef = useShakaPlayer({
@@ -38,6 +38,8 @@ const FullScreenPlayer = () => {
     poster: video?.thumb,
   });
   const [state, controls] = useVideoControls({ ref: videoRef });
+
+  console.log(state);
 
   const handleLoadedMetadata = () => {
     const video = videoRef?.current;
@@ -102,12 +104,25 @@ const FullScreenPlayer = () => {
               <div className="h-full flex-1  flex flex-row items-center justify-start gap-4">
                 <div className="h-full flex flex-row items-center justify-start gap-2">
                   <ControlsIcon
+                    icon={<SeekBack />}
+                    onClick={() => controls.seekBackward(10)}
+                  />
+                  <ControlsIcon
                     icon={state.paused ? <Play /> : <Pause />}
                     onClick={state.paused ? controls.play : controls.pause}
                   />
                   <ControlsIcon
+                    icon={<SeekForward />}
+                    onClick={() => controls.seekForward(10)}
+                  />
+
+                  <ControlsIcon
                     icon={state?.muted ? <Mute /> : <VolumeHigh />}
-                    onClick={state?.muted ? controls.unmute : controls.mute}
+                    onClick={
+                      state?.muted
+                        ? () => controls?.setMuted(false)
+                        : () => controls?.setMuted(true)
+                    }
                   />
                 </div>
                 <div className="flex flex-row items-center justify-start gap-3 font-semibold">

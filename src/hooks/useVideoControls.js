@@ -45,27 +45,33 @@ const useVideoControls = ({ ref }) => {
 
   const controls = {
     play: () => {
-      ref?.current?.play();
+      if (!ref?.current) return;
+      ref.current.play();
     },
     pause: () => {
-      ref?.current?.pause();
+      if (!ref?.current) return;
+      ref.current.pause();
     },
-    // setMuted: () => {
-    //   ref?.current?.muted = true;
-    // },
-    // setVolume: (volume) => {
-    //   ref?.current?.volume = volume;
-    // },
+    setMuted: (bool) => {
+      if (!ref?.current) return;
+      ref.current.muted = bool;
+    },
+    setVolume: (volume) => {
+      if (!ref?.current) return;
+      ref.current.volume = volume;
+    },
     seekTo: (time) => {
       if (!ref?.current) return;
-      ref.current.currentTime = time
+      ref.current.currentTime = time;
     },
-    // seekForward: (seconds) => {
-    //   ref?.current?.currentTime += seconds;
-    // },
-    // seekBackward: (seconds) => {
-    //   ref?.current?.currentTime -= seconds;
-    // },
+    seekForward: (seconds) => {
+      if (!ref?.current) return;
+      ref.current.currentTime += seconds;
+    },
+    seekBackward: (seconds) => {
+      if (!ref?.current) return;
+      ref.current.currentTime -= seconds;
+    },
   };
 
   return [state, controls];
