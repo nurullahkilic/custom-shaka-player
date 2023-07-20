@@ -1,3 +1,4 @@
+import hotkeys from "hotkeys-js";
 import React, { useEffect, useState } from "react";
 
 const useVideoControls = ({ ref }) => {
@@ -11,8 +12,13 @@ const useVideoControls = ({ ref }) => {
     volume: 1,
   });
 
+  console.log("state", state);
+
+
   useEffect(() => {
     const updateVideoState = () => {
+      if (ref?.current?.volume === 0) controls.setMuted(true);
+
       setVideoState({
         time: ref?.current?.currentTime,
         duration: ref?.current?.duration,
@@ -30,6 +36,44 @@ const useVideoControls = ({ ref }) => {
     ref?.current?.addEventListener("volumechange", updateVideoState);
     ref?.current?.addEventListener("loadedmetadata", updateVideoState);
     ref?.current?.addEventListener("progress", updateVideoState);
+
+    hotkeys("f,m,space,up,down,left,right", (e, handler) => {
+      e.preventDefault();
+
+      switch (handler.key) {
+        case "f":
+          e.preventDefault();
+          console.log("You pressed f");
+          break;
+        case "m":
+          if (!ref?.current?.muted) {
+            controls?.setMuted(true);
+          }
+          break;
+        case "space":
+          if (ref?.current?.paused) {
+            controls.play();
+          } else {
+            controls.pause();
+          }
+          break;
+        case "up":
+          if (!state.muted) controls.setMuted(false);
+          controls.setVolumeHigher();
+          break;
+        case "down":
+          if (state.muted) controls.setMuted(false);
+          controls.setVolumeLower();
+          break;
+        case "left":
+          controls.seekBackward(10);
+          break;
+        case "right":
+          controls.seekForward(10);
+          e.preventDefault();
+          break;
+      }
+    });
 
     return () => {
       ref?.current?.removeEventListener("timeupdate", updateVideoState);
@@ -59,6 +103,14 @@ const useVideoControls = ({ ref }) => {
     setVolume: (volume) => {
       if (!ref?.current) return;
       ref.current.volume = volume;
+    },
+    setVolumeHigher: () => {
+      if (!ref?.current) return;
+      ref.current.volume = Math.min(1, ref.current.volume + 0.1);
+    },
+    setVolumeLower: () => {
+      if (!ref?.current) return;
+      ref.current.volume = Math.max(0, ref.current.volume - 0.1);
     },
     seekTo: (time) => {
       if (!ref?.current) return;

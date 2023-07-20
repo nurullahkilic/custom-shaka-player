@@ -25,6 +25,7 @@ import {
   SeekForward,
   Settings,
   VolumeHigh,
+  VolumeLow,
 } from "../../icons";
 
 const FullScreenPlayer = () => {
@@ -33,7 +34,7 @@ const FullScreenPlayer = () => {
   let videoId = useQuery().get("v") || 4135028;
   const video = videos.find((video) => video.id === Number(videoId));
 
-  const videoRef = useShakaPlayer({
+  const [videoRef, textTrackRef] = useShakaPlayer({
     manifestUri: video?.sources?.[0],
     poster: video?.thumb,
   });
@@ -54,7 +55,7 @@ const FullScreenPlayer = () => {
           className="aspect-video min-h-full min-w-full"
           ref={videoRef}
           onLoadedMetadata={handleLoadedMetadata}
-        />
+        ></video>
       </div>
       <div className="absolute inset-0">
         {/* Top Side */}
@@ -85,6 +86,7 @@ const FullScreenPlayer = () => {
         {/* Bottom Side */}
         <div className="absolute bottom-0 left-0 right-0 w-full h-[18%] bg-gradient-to-t from-[rgba(0,0,0,.65)] flex flex-col items-center justify-end ">
           <div className="w-full h-full flex flex-col items-center justify-end px-2 text-white">
+            <div ref={textTrackRef}></div>
             <div className="w-full px-2">
               <input
                 type="range"
@@ -113,9 +115,16 @@ const FullScreenPlayer = () => {
                     icon={<SeekForward />}
                     onClick={() => controls.seekForward(10)}
                   />
-
                   <ControlsIcon
-                    icon={state?.muted ? <Mute /> : <VolumeHigh />}
+                    icon={
+                      state?.muted ? (
+                        <Mute />
+                      ) : state?.volume > 0.5 ? (
+                        <VolumeHigh />
+                      ) : (
+                        <VolumeLow />
+                      )
+                    }
                     onClick={
                       state?.muted
                         ? () => controls?.setMuted(false)
@@ -125,8 +134,8 @@ const FullScreenPlayer = () => {
                 </div>
                 <div className="flex flex-row items-center justify-start gap-3 font-semibold">
                   <span>
-                    {format(state?.time * 1000)} /{" "}
-                    {format(state?.duration * 1000)}
+                    {state?.time ? format(state?.time * 1000) : "0:00"} /{" "}
+                    {state?.duration ? format(state?.duration * 1000) : "0:00"}
                   </span>
                   <span className="max-lg:hidden">•</span>
                   <span className="max-lg:hidden">The Explanation</span>

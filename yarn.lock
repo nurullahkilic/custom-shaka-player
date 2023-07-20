@@ -1290,6 +1290,11 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
+hotkeys-js@^3.11.2:
+  version "3.11.2"
+  resolved "https://registry.yarnpkg.com/hotkeys-js/-/hotkeys-js-3.11.2.tgz#c7893a01a1faa96db621bdd5c9baa1b4b0c7d3c0"
+  integrity sha512-hLuR+wtvrVrVFHku5cud44cPXQf5ke+96TonRaGzlNSt22rh2LH65avLYFNsc+QpzMuOEQG/IxJT5mEop99rvg==
+
 ignore@^5.2.0:
   version "5.2.4"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.4.tgz#a291c0c6178ff1b960befe47fcdec301674a6324"

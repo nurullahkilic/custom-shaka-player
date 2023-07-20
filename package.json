@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "format-duration": "^3.0.2",
+    "hotkeys-js": "^3.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-full-screen": "^1.1.1",
