@@ -4,6 +4,8 @@ import {
   useFullScreenHandle,
 } from "react-full-screen";
 
+import Tooltip from "@mui/material/Tooltip";
+
 import { useQuery } from "../../utils";
 import useVideoControls from "../../hooks/useVideoControls";
 import useShakaPlayer from "../../hooks/useShakaPlayer";
@@ -35,7 +37,7 @@ const FullScreenPlayer = () => {
   const video = videos.find((video) => video.id === Number(videoId));
 
   const [videoRef, textTrackRef] = useShakaPlayer({
-    manifestUri: video?.sources?.[0],
+    manifestUri: video?.sources?.[1],
     poster: video?.thumb,
   });
   const [state, controls] = useVideoControls({ ref: videoRef });
@@ -53,8 +55,10 @@ const FullScreenPlayer = () => {
       <div className="absolute inset-0 aspect-video h-full w-full flex items-center justify-center z-0">
         <video
           className="aspect-video min-h-full min-w-full"
-          ref={videoRef}
           onLoadedMetadata={handleLoadedMetadata}
+          autoPlay={false}
+          controls={false}
+          ref={videoRef}
         ></video>
       </div>
       <div className="absolute inset-0">
@@ -104,18 +108,22 @@ const FullScreenPlayer = () => {
               <div className="h-full flex-1  flex flex-row items-center justify-start gap-4">
                 <div className="h-full flex flex-row items-center justify-start gap-2">
                   <ControlsIcon
+                    title={"Seek Backward"}
                     icon={<SeekBack />}
                     onClick={() => controls.seekBackward(10)}
                   />
                   <ControlsIcon
+                    title={state.paused ? "Play" : "Pause"}
                     icon={state.paused ? <Play /> : <Pause />}
                     onClick={state.paused ? controls.play : controls.pause}
                   />
                   <ControlsIcon
+                    title={"Seek Forward"}
                     icon={<SeekForward />}
                     onClick={() => controls.seekForward(10)}
                   />
                   <ControlsIcon
+                    title={state?.muted ? "Unmute" : "Mute"}
                     icon={
                       state?.muted ? (
                         <Mute />
@@ -143,9 +151,13 @@ const FullScreenPlayer = () => {
               </div>
               <div className="h-full flex-1  flex flex-row items-center justify-end gap-2">
                 <div className="h-full flex flex-row items-center justify-end gap-2">
-                  <ControlsIcon icon={<ClosedCaptions />} />
+                  <ControlsIcon
+                    title={"Closed Captions"}
+                    icon={<ClosedCaptions />}
+                  />
                   <ControlsIcon
                     icon={<PictureInPicture />}
+                    title={"Picture In Picture"}
                     onClick={() => {
                       if (document.pictureInPictureElement)
                         document.exitPictureInPicture();
@@ -154,6 +166,7 @@ const FullScreenPlayer = () => {
                     }}
                   />
                   <ControlsIcon
+                    title={handle.active ? "Exit Full Screen" : "Full Screen"}
                     icon={handle.active ? <FullScreenExit /> : <FullScreen />}
                     onClick={handle.active ? handle.exit : handle.enter}
                   />
@@ -169,14 +182,16 @@ const FullScreenPlayer = () => {
 
 export default FullScreenPlayer;
 
-const ControlsIcon = ({ icon, onClick, ...props }) => {
+const ControlsIcon = ({ title, icon, onClick, ...props }) => {
   return (
-    <button
-      onClick={onClick}
-      className="aspect-square w-[42px] flex items-center justify-center rounded cursor-pointer hover:bg-white/20 "
-      {...props}
-    >
-      {icon}
-    </button>
+    <Tooltip title={title} placement="top">
+      <button
+        onClick={onClick}
+        className="aspect-square w-[42px] flex items-center justify-center rounded cursor-pointer hover:bg-white/20 "
+        {...props}
+      >
+        {icon}
+      </button>
+    </Tooltip>
   );
 };

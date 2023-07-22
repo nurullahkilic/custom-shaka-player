@@ -1,9 +1,7 @@
 import hotkeys from "hotkeys-js";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const useVideoControls = ({ ref }) => {
-  const video = ref?.current;
-
   const [state, setVideoState] = useState({
     time: 0,
     duration: 0,
@@ -11,9 +9,6 @@ const useVideoControls = ({ ref }) => {
     muted: false,
     volume: 1,
   });
-
-  console.log("state", state);
-
 
   useEffect(() => {
     const updateVideoState = () => {
@@ -42,8 +37,6 @@ const useVideoControls = ({ ref }) => {
 
       switch (handler.key) {
         case "f":
-          e.preventDefault();
-          console.log("You pressed f");
           break;
         case "m":
           if (!ref?.current?.muted) {

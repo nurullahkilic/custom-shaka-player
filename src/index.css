@@ -9,3 +9,41 @@
     @apply h-full w-full antialiased bg-black;
   }
 }
+
+.shaka-text-container {
+  background: transparent !important;
+  font-size: 32px;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+}
+
+.shaka-text-container > div {
+  background: transparent;
+}
+
+.shaka-text-container > div span {
+  background: transparent !important;
+
+  line-height: normal;
+  font-weight: normal;
+  color: #ffffff;
+  text-shadow: #000000 0px 0px 7px;
+  font-weight: bolder;
+}
+
+*::-webkit-media-controls-panel {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+*::-webkit-media-controls-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+*::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
