@@ -25,8 +25,7 @@ const useHlsPlayer = ({
     var hls = new Hls();
 
     hls.on(Hls.Events.MANIFEST_LOADED, function (event, data) {
-      hls.autoLevelEnabled;
-      console.log("hls ", hls.levels);
+      console.log("hls ", hls);
       console.log("data levels ", data.levels);
 
       console.log(

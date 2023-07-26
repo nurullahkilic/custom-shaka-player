@@ -7,8 +7,6 @@ const useShakaPlayer = ({
 }) => {
   const videoRef = useRef(null);
 
-  const [internalPlayer, setInternalPlayer] = useState(null);
-
   useEffect(() => {
     initApp();
   }, []);
@@ -48,17 +46,12 @@ const useShakaPlayer = ({
   };
 
   const initPlayer = async () => {
-   
     // Create a Player instance.
     const video = videoRef?.current;
     video.poster = poster;
 
-
-
     const player = new shaka.Player(video);
     player.configure("manifest.defaultPresentationDelay", 0);
-
-   
 
     // Attach player to the window to make it easy to access in the JS console.
     window.player = player;
@@ -70,8 +63,6 @@ const useShakaPlayer = ({
     // This is an asynchronous process.
     try {
       await player.load(manifestUri);
-
-      setInternalPlayer(player);
 
       initSubtitle(player);
 

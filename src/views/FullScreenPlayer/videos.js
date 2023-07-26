@@ -125,6 +125,19 @@ export const videos = [
     title: "Subaru Outback On Street And Dirt",
   },
   {
+    id: 333,
+    description:
+      "Tears of Steel was realized with crowd-funding by users of the open source 3D creation tool Blender. Target was to improve and test a complete open and free pipeline for visual effects in film - and to make a compelling sci-fi film in Amsterdam, the Netherlands. The film itself, and all raw material used for making it, have been released under the Creatieve Commons 3.0 Attribution license. Visit the tearsofsteel.org website to find out more about this, or to purchase the 4-DVD box with a lot of extras. (CC) Blender Foundation - http://www.tearsofsteel.org",
+    sources: [
+      "https://eu1.tabii.com/apigateway/pbr/v1/media/115316/115313.m3u8",
+    ],
+    thumb:
+      "https://cms-tabii-public-image.tabii.com/int/w640/q90//w200/23593_0-0-1919-1080.jpeg",
+
+    subtitle: "By Blender Foundation",
+    title: "Diriliş Ertuğrul",
+  },
+  {
     id: 1267384,
     description:
       "Tears of Steel was realized with crowd-funding by users of the open source 3D creation tool Blender. Target was to improve and test a complete open and free pipeline for visual effects in film - and to make a compelling sci-fi film in Amsterdam, the Netherlands. The film itself, and all raw material used for making it, have been released under the Creatieve Commons 3.0 Attribution license. Visit the tearsofsteel.org website to find out more about this, or to purchase the 4-DVD box with a lot of extras. (CC) Blender Foundation - http://www.tearsofsteel.org",

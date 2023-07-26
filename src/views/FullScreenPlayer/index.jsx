@@ -37,19 +37,39 @@ const FullScreenPlayer = () => {
   let videoId = useQuery().get("v") || 4135028;
   const video = videos.find((video) => video.id === Number(videoId));
 
+  let urlParam = useQuery().get("url");
+  let videoURL;
+
+  if (urlParam === null) {
+    videoURL = video?.sources?.[0];
+  } else {
+    videoURL = urlParam;
+  }
+
   let videoRef;
 
-  if (video?.sources?.[0].includes(".m3u8")) {
+  if (urlParam === null) {
     [videoRef] = useHlsPlayer({
-      manifestUri: video?.sources?.[0],
+      manifestUri: videoURL,
       poster: video?.thumb,
     });
   } else {
     [videoRef] = useShakaPlayer({
-      src: video?.sources?.[0],
+      src: videoURL,
       poster: video?.thumb,
     });
   }
+  // if (video?.sources?.[0].includes(".m3u8")) {
+  //   [videoRef] = useHlsPlayer({
+  //     manifestUri: videoURL,
+  //     poster: video?.thumb,
+  //   });
+  // } else {
+  //   [videoRef] = useShakaPlayer({
+  //     src: videoURL,
+  //     poster: video?.thumb,
+  //   });
+  // }
 
   const [state, controls] = useVideoControls({ ref: videoRef });
 
