@@ -9,6 +9,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { useQuery } from "../../utils";
 import useVideoControls from "../../hooks/useVideoControls";
 import useShakaPlayer from "../../hooks/useShakaPlayer";
+import useHlsPlayer from "../../hooks/useHlsPlayer";
 
 import { videos } from "./videos";
 import format from "format-duration";
@@ -36,10 +37,20 @@ const FullScreenPlayer = () => {
   let videoId = useQuery().get("v") || 4135028;
   const video = videos.find((video) => video.id === Number(videoId));
 
-  const [videoRef, textTrackRef] = useShakaPlayer({
-    manifestUri: video?.sources?.[1],
-    poster: video?.thumb,
-  });
+  let videoRef;
+
+  if (video?.sources?.[0].includes(".m3u8")) {
+    [videoRef] = useHlsPlayer({
+      manifestUri: video?.sources?.[0],
+      poster: video?.thumb,
+    });
+  } else {
+    [videoRef] = useShakaPlayer({
+      src: video?.sources?.[0],
+      poster: video?.thumb,
+    });
+  }
+
   const [state, controls] = useVideoControls({ ref: videoRef });
 
   const handleLoadedMetadata = () => {
@@ -90,7 +101,7 @@ const FullScreenPlayer = () => {
         {/* Bottom Side */}
         <div className="absolute bottom-0 left-0 right-0 w-full h-[18%] bg-gradient-to-t from-[rgba(0,0,0,.65)] flex flex-col items-center justify-end ">
           <div className="w-full h-full flex flex-col items-center justify-end px-2 text-white">
-            <div ref={textTrackRef}></div>
+            <div id="subtitle-container"></div>
             <div className="w-full px-2">
               <input
                 type="range"
@@ -154,6 +165,7 @@ const FullScreenPlayer = () => {
                   <ControlsIcon
                     title={"Closed Captions"}
                     icon={<ClosedCaptions />}
+                    onClick={controls.closeCaptions}
                   />
                   <ControlsIcon
                     icon={<PictureInPicture />}

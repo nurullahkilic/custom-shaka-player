@@ -4,12 +4,12 @@ export const videos = [
     description:
       "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him, something snaps... and the rabbit ain't no bunny anymore! In the typical cartoon tradition he prepares the nasty rodents a comical revenge.\n\nLicensed under the Creative Commons Attribution license\nhttp://www.bigbuckbunny.org",
     sources: [
-      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "https://tv-trt1.medya.trt.com.tr/master.m3u8",
     ],
     subtitle: "By Blender Foundation",
     thumb:
       "https://cms-tabii-public-image.tabii.com/int/w640/q90//w200/23593_0-0-1919-1080.jpeg",
-    title: "Big Buck Bunny",
+    title: "TRT CANLI",
   },
   {
     id: 1267329,
@@ -36,24 +36,35 @@ export const videos = [
     title: "For Bigger Blazes",
   },
   {
-    id: 1267331,
+    id: 12673318,
     description:
       "Introducing Chromecast. The easiest way to enjoy online video and music on your TV—for when Batman's escapes aren't quite big enough. For $35. Learn how to use Chromecast with Google Play Movies and more at google.com/chromecast.",
     sources: [
-      "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",
-      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+      "https://eu1.tabii.com/apigateway/pbr/v1/media/164635/164632.mpd",
     ],
     thumb:
       "https://cms-tabii-public-image.tabii.com/int/w640/q90//w200/23593_0-0-1919-1080.jpeg",
     subtitle: "By Google",
-    title: "For Bigger Escape",
+    title: "Yeşil Deniz Fragman",
+  },
+  {
+    id: 82673318,
+    description:
+      "Introducing Chromecast. The easiest way to enjoy online video and music on your TV—for when Batman's escapes aren't quite big enough. For $35. Learn how to use Chromecast with Google Play Movies and more at google.com/chromecast.",
+    sources: [
+      "https://eu1.tabii.com/apigateway/pbr/v1/media/103466/103461.m3u8",
+    ],
+    thumb:
+      "https://cms-tabii-public-image.tabii.com/int/w640/q90//w200/23593_0-0-1919-1080.jpeg",
+    subtitle: "By Google",
+    title: "Diriliş Ertuğrul Fragman",
   },
   {
     id: 1267332,
     description:
       "Introducing Chromecast. The easiest way to enjoy online video and music on your TV. For $35. Find out more at google.com/chromecast.",
     sources: [
-      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+      "https://tv-trt1.medya.trt.com.tr/master.m3u8?hls=1",
     ],
     thumb:
       "https://cms-tabii-public-image.tabii.com/int/w640/q90//w200/23593_0-0-1919-1080.jpeg",

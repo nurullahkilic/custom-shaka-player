@@ -32,7 +32,7 @@
   text-shadow: #000000 0px 0px 7px;
   font-weight: bolder;
 }
-
+/*
 *::-webkit-media-controls-panel {
   display: none !important;
   -webkit-appearance: none;
@@ -47,3 +47,4 @@
   display: none !important;
   -webkit-appearance: none;
 }
+*/
