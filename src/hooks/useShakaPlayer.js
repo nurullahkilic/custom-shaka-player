@@ -1,11 +1,15 @@
 import { useRef, useEffect, useState } from "react";
 import shaka from "shaka-player";
 
+import { usePlayerState } from "../context/usePlayerState";
+
 const useShakaPlayer = ({
   manifestUri = "https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd",
   poster = "https://cms-tabii-public-image.tabii.com/int/w640/q90//w200/23593_0-0-1919-1080.jpeg",
 }) => {
   const videoRef = useRef(null);
+
+  const setInternalPlayer = usePlayerState((state) => state.setInternalPlayer);
 
   useEffect(() => {
     initApp();
@@ -56,6 +60,8 @@ const useShakaPlayer = ({
     // Attach player to the window to make it easy to access in the JS console.
     window.player = player;
 
+    setInternalPlayer(player);
+
     // Listen for error events.
     player.addEventListener("error", onErrorEvent);
 
@@ -63,6 +69,12 @@ const useShakaPlayer = ({
     // This is an asynchronous process.
     try {
       await player.load(manifestUri);
+
+      player.configure({
+        abr: {
+          enabled: false,
+        },
+      });
 
       initSubtitle(player);
 
@@ -98,9 +110,9 @@ const useShakaPlayer = ({
         player?.getAudioLanguagesAndRoles()
       );
 
-      const languages = player?.getAudioLanguagesAndRoles();
+      // const languages = player?.getAudioLanguagesAndRoles();
 
-      player?.selectAudioLanguage(languages[4].language);
+      // player?.selectAudioLanguage(languages[4].language);
       // player?.selectTextLanguage(languages[1].language);
       // player.selectTextTrack(textTracks?.[1]);
 

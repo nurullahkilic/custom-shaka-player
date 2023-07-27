@@ -1,18 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   FullScreen as FullScreeenWrapper,
   useFullScreenHandle,
 } from "react-full-screen";
 
 import Tooltip from "@mui/material/Tooltip";
+import Slider from "@mui/material/Slider";
 
-import { useQuery } from "../../utils";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+
+import { languageName, useQuery } from "../../utils";
 import useVideoControls from "../../hooks/useVideoControls";
 import useShakaPlayer from "../../hooks/useShakaPlayer";
 import useHlsPlayer from "../../hooks/useHlsPlayer";
 
 import { videos } from "./videos";
 import format from "format-duration";
+
+import { usePlayerState } from "../../context/usePlayerState";
 
 import {
   Chapters,
@@ -30,8 +37,20 @@ import {
   VolumeHigh,
   VolumeLow,
 } from "../../icons";
+import { document } from "postcss";
 
 const FullScreenPlayer = () => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const internalPlayer = usePlayerState((state) => state.internalPlayer);
+
   const handle = useFullScreenHandle();
 
   let videoId = useQuery().get("v") || 4135028;
@@ -40,15 +59,14 @@ const FullScreenPlayer = () => {
   let urlParam = useQuery().get("url");
   let videoURL;
 
+  let videoRef;
   if (urlParam === null) {
     videoURL = video?.sources?.[0];
   } else {
     videoURL = urlParam;
   }
 
-  let videoRef;
-
-  if (urlParam === null) {
+  if (urlParam?.includes(".m3u8") || video?.sources?.[0].includes(".m3u8")) {
     [videoRef] = useHlsPlayer({
       manifestUri: videoURL,
       poster: video?.thumb,
@@ -77,6 +95,10 @@ const FullScreenPlayer = () => {
     const video = videoRef?.current;
     if (!video) return;
   };
+
+  useEffect(() => {
+    console.log("handle", handle);
+  }, [handle]);
 
   return (
     <FullScreeenWrapper
@@ -110,8 +132,64 @@ const FullScreenPlayer = () => {
               </div>
               <div className="h-full flex-1  flex flex-row items-start justify-end gap-2">
                 <div className="h-full flex flex-row items-start justify-end gap-2">
+                  <Menu
+                    container={handle?.node?.current}
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    contextMenu="true"
+                  >
+                    <div className="w-[440px] h-full flex flex-row items-start justify-start bg-zinc-700 rounded-md overflow-hidden max-md:w-full">
+                      <div className="w-full h-full flex flex-col items-center justify-start">
+                        <h4 className="w-full py-3 px-4 text-2xl font-bold border-b-[1px] border-zinc-600">
+                          Seslendirme
+                        </h4>
+                        <div className="w-full flex flex-col items-center justify-center mb-2">
+                          {internalPlayer
+                            ?.getAudioLanguagesAndRoles()
+                            ?.map((track, index) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  console.log("dil değiştirildi");
+                                  internalPlayer?.selectAudioLanguage(
+                                    track?.language
+                                  );
+                                  handleClose();
+                                }}
+                                className="w-full py-2 px-4 text-lg font-normal text-left transition-colors hover:bg-zinc-600"
+                              >
+                                {languageName(track?.language)}
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                      <div className="w-full h-full flex flex-col items-center justify-start ">
+                        <h4 className="w-full py-3 px-4 text-2xl font-bold border-b-[1px] border-zinc-600">
+                          Altyazı
+                        </h4>
+                        <div className="w-full flex flex-col items-center justify-center mb-2">
+                          {internalPlayer
+                            ?.getTextTracks()
+                            ?.map((track, index) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  console.log("dil değiştirildi");
+                                  internalPlayer?.selectTextTrack(track);
+                                }}
+                                className="w-full py-2 px-4 text-lg font-normal text-left transition-colors hover:bg-zinc-600"
+                              >
+                                {languageName(track?.language)}
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </Menu>
+
                   <ControlsIcon icon={<Chapters />} />
-                  <ControlsIcon icon={<Settings />} />
+                  <ControlsIcon icon={<Settings />} onClick={handleClick} />
                 </div>
               </div>
             </div>
@@ -120,10 +198,22 @@ const FullScreenPlayer = () => {
 
         {/* Bottom Side */}
         <div className="absolute bottom-0 left-0 right-0 w-full h-[18%] bg-gradient-to-t from-[rgba(0,0,0,.65)] flex flex-col items-center justify-end ">
-          <div className="w-full h-full flex flex-col items-center justify-end px-2 text-white">
+          <div className="w-full h-full flex flex-col items-center justify-end px-3 text-white">
             <div id="subtitle-container"></div>
-            <div className="w-full px-2">
-              <input
+            <div className="w-full px-4">
+              <Slider
+                type="range"
+                min={0}
+                max={1000}
+                value={Number((state?.time / state?.duration) * 1000) || 0}
+                step={0.05}
+                onChange={(e) =>
+                  controls.seekTo((e.target.value / 1000) * state?.duration)
+                }
+                valueLabelDisplay={"off"}
+                disableSwap={true}
+              />
+              {/* <input
                 type="range"
                 min={0}
                 max={1000}
@@ -133,9 +223,9 @@ const FullScreenPlayer = () => {
                   controls.seekTo((e.target.value / 1000) * state?.duration)
                 }
                 className="w-full h-1 bg-white/20 rounded-full"
-              />
+              /> */}
             </div>
-            <div className="w-full flex flex-row items-center justify-between py-4">
+            <div className="w-full flex flex-row items-center justify-between pb-4">
               <div className="h-full flex-1  flex flex-row items-center justify-start gap-4">
                 <div className="h-full flex flex-row items-center justify-start gap-2">
                   <ControlsIcon
@@ -177,7 +267,7 @@ const FullScreenPlayer = () => {
                     {state?.duration ? format(state?.duration * 1000) : "0:00"}
                   </span>
                   <span className="max-lg:hidden">•</span>
-                  <span className="max-lg:hidden">The Explanation</span>
+                  <span className="max-lg:hidden">The Explode</span>
                 </div>
               </div>
               <div className="h-full flex-1  flex flex-row items-center justify-end gap-2">
@@ -185,7 +275,6 @@ const FullScreenPlayer = () => {
                   <ControlsIcon
                     title={"Closed Captions"}
                     icon={<ClosedCaptions />}
-                    onClick={controls.closeCaptions}
                   />
                   <ControlsIcon
                     icon={<PictureInPicture />}
@@ -198,6 +287,7 @@ const FullScreenPlayer = () => {
                     }}
                   />
                   <ControlsIcon
+                    handle={handle}
                     title={handle.active ? "Exit Full Screen" : "Full Screen"}
                     icon={handle.active ? <FullScreenExit /> : <FullScreen />}
                     onClick={handle.active ? handle.exit : handle.enter}
@@ -214,7 +304,7 @@ const FullScreenPlayer = () => {
 
 export default FullScreenPlayer;
 
-const ControlsIcon = ({ title, icon, onClick, ...props }) => {
+const ControlsIcon = ({ title, icon, onClick, handle, ...props }) => {
   return (
     <Tooltip title={title} placement="top">
       <button

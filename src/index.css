@@ -47,3 +47,35 @@
   display: none !important;
   -webkit-appearance: none;
 }
+
+.MuiSlider-root {
+  color: #ffffff !important;
+}
+
+.MuiSlider-colorPrimary {
+  color: #ffffff !important;
+}
+
+.MuiSlider-thumb {
+  color: #ffffff !important;
+}
+
+.MuiSlider-thumb:hover {
+  color: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: none !important;
+}
+
+.MuiSlider-marked {
+  color: #ffffff !important;
+}
+
+.MuiMenu-paper {
+  position: absolute !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+
+}
