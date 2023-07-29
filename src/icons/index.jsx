@@ -12,6 +12,7 @@ import VolumeLow from "./volume-low";
 import GoBack from "./go-back";
 import SeekBack from "./seek-back";
 import SeekForward from "./seek-forward";
+import Languages from "./languages";
 
 export {
   Chapters,
@@ -28,4 +29,5 @@ export {
   GoBack,
   SeekBack,
   SeekForward,
+  Languages
 };

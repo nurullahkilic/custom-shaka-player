@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FullScreen as FullScreeenWrapper,
   useFullScreenHandle,
@@ -27,6 +27,7 @@ import {
   FullScreen,
   FullScreenExit,
   GoBack,
+  Languages,
   Mute,
   Pause,
   PictureInPicture,
@@ -40,6 +41,7 @@ import {
 import { document } from "postcss";
 
 const FullScreenPlayer = () => {
+  const [isLive, setIsLive] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -59,24 +61,25 @@ const FullScreenPlayer = () => {
   let urlParam = useQuery().get("url");
   let videoURL;
 
-  let videoRef;
+  // let videoRef;
   if (urlParam === null) {
     videoURL = video?.sources?.[0];
   } else {
     videoURL = urlParam;
   }
 
-  if (urlParam?.includes(".m3u8") || video?.sources?.[0].includes(".m3u8")) {
-    [videoRef] = useHlsPlayer({
-      manifestUri: videoURL,
-      poster: video?.thumb,
-    });
-  } else {
-    [videoRef] = useShakaPlayer({
-      src: videoURL,
-      poster: video?.thumb,
-    });
-  }
+  // if (urlParam?.includes(".m3u8") || video?.sources?.[0].includes(".m3u8")) {
+  //   [videoRef] = useHlsPlayer({
+  //     manifestUri: videoURL,
+  //     poster: video?.thumb,
+  //   });
+  // } else {
+  const [videoRef] = useShakaPlayer({
+    manifestUri: videoURL,
+    poster: video?.thumb,
+  });
+  // }
+
   // if (video?.sources?.[0].includes(".m3u8")) {
   //   [videoRef] = useHlsPlayer({
   //     manifestUri: videoURL,
@@ -97,8 +100,16 @@ const FullScreenPlayer = () => {
   };
 
   useEffect(() => {
-    console.log("handle", handle);
-  }, [handle]);
+    console.log("canlıdır ya da değildir!");
+    if (internalPlayer?.isLive() === true) setIsLive(true);
+  }, [internalPlayer?.isLive()]);
+
+  const getQuality = () => {
+    internalPlayer?.getVariantTracks().forEach((track) => {
+      console.log(track.height);
+    });
+    internalPlayer?.selectVariantTrack(internalPlayer?.getVariantTracks()[4]);
+  };
 
   return (
     <FullScreeenWrapper
@@ -126,70 +137,80 @@ const FullScreenPlayer = () => {
                     {video?.title}
                   </p>
                   <h6 className="text-base text-zinc-300 leading-none">
-                    Season 1 Episode 12
+                    Season 1 Episode 12{isLive ? "canlı" : "VOD"}
                   </h6>
                 </div>
               </div>
               <div className="h-full flex-1  flex flex-row items-start justify-end gap-2">
                 <div className="h-full flex flex-row items-start justify-end gap-2">
-                  <Menu
-                    container={handle?.node?.current}
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    contextMenu="true"
-                  >
-                    <div className="w-[440px] h-full flex flex-row items-start justify-start bg-zinc-700 rounded-md overflow-hidden max-md:w-full">
-                      <div className="w-full h-full flex flex-col items-center justify-start">
-                        <h4 className="w-full py-3 px-4 text-2xl font-bold border-b-[1px] border-zinc-600">
-                          Seslendirme
-                        </h4>
-                        <div className="w-full flex flex-col items-center justify-center mb-2">
-                          {internalPlayer
-                            ?.getAudioLanguagesAndRoles()
-                            ?.map((track, index) => (
-                              <button
-                                key={index}
-                                onClick={() => {
-                                  console.log("dil değiştirildi");
-                                  internalPlayer?.selectAudioLanguage(
-                                    track?.language
-                                  );
-                                  handleClose();
-                                }}
-                                className="w-full py-2 px-4 text-lg font-normal text-left transition-colors hover:bg-zinc-600"
-                              >
-                                {languageName(track?.language)}
-                              </button>
-                            ))}
+                  {!isLive && (
+                    <Menu
+                      container={handle?.node?.current}
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      contextMenu="true"
+                    >
+                      <div className="w-[440px] h-full flex flex-row items-start justify-start bg-zinc-800/95 rounded-md overflow-hidden max-md:w-full">
+                        <div className="w-full h-full flex flex-col items-center justify-start">
+                          <h4 className="w-full py-3 px-4 text-2xl font-bold border-b-[1px] border-zinc-600">
+                            Seslendirme
+                          </h4>
+                          <div className="w-full flex flex-col items-center justify-center mb-2">
+                            {internalPlayer
+                              ?.getAudioLanguagesAndRoles()
+                              ?.map((track, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => {
+                                    console.log("dil değiştirildi");
+                                    internalPlayer?.selectAudioLanguage(
+                                      track?.language
+                                    );
+                                    handleClose();
+                                  }}
+                                  className="w-full py-2 px-4 text-lg font-normal text-left transition-colors hover:bg-zinc-600/60"
+                                >
+                                  {languageName(track?.language)}
+                                </button>
+                              ))}
+                          </div>
+                        </div>
+                        <div className="w-full h-full flex flex-col items-center justify-start ">
+                          <h4 className="w-full py-3 px-4 text-2xl font-bold border-b-[1px] border-zinc-600">
+                            Altyazı
+                          </h4>
+                          <div className="w-full flex flex-col items-center justify-center mb-2">
+                            {internalPlayer
+                              ?.getTextTracks()
+                              ?.map((track, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => {
+                                    console.log("dil değiştirildi");
+                                    internalPlayer?.selectTextTrack(track);
+                                  }}
+                                  className="w-full py-2 px-4 text-lg font-normal text-left transition-colors hover:bg-zinc-600"
+                                >
+                                  {languageName(track?.language)}
+                                </button>
+                              ))}
+                          </div>
                         </div>
                       </div>
-                      <div className="w-full h-full flex flex-col items-center justify-start ">
-                        <h4 className="w-full py-3 px-4 text-2xl font-bold border-b-[1px] border-zinc-600">
-                          Altyazı
-                        </h4>
-                        <div className="w-full flex flex-col items-center justify-center mb-2">
-                          {internalPlayer
-                            ?.getTextTracks()
-                            ?.map((track, index) => (
-                              <button
-                                key={index}
-                                onClick={() => {
-                                  console.log("dil değiştirildi");
-                                  internalPlayer?.selectTextTrack(track);
-                                }}
-                                className="w-full py-2 px-4 text-lg font-normal text-left transition-colors hover:bg-zinc-600"
-                              >
-                                {languageName(track?.language)}
-                              </button>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-                  </Menu>
-
+                    </Menu>
+                  )}
+                  {internalPlayer?.getAudioLanguagesAndRoles()?.length > 0 ||
+                  internalPlayer?.getTextTracks()?.length > 0 ? (
+                    <ControlsIcon icon={<Languages />} onClick={handleClick} />
+                  ) : (
+                    <ControlsIcon
+                      icon={<Languages />}
+                      title={"Çeviri bulunmamaktadır!"}
+                    />
+                  )}
                   <ControlsIcon icon={<Chapters />} />
-                  <ControlsIcon icon={<Settings />} onClick={handleClick} />
+                  <ControlsIcon icon={<Settings />} />
                 </div>
               </div>
             </div>
@@ -201,18 +222,30 @@ const FullScreenPlayer = () => {
           <div className="w-full h-full flex flex-col items-center justify-end px-3 text-white">
             <div id="subtitle-container"></div>
             <div className="w-full px-4">
-              <Slider
-                type="range"
-                min={0}
-                max={1000}
-                value={Number((state?.time / state?.duration) * 1000) || 0}
-                step={0.05}
-                onChange={(e) =>
-                  controls.seekTo((e.target.value / 1000) * state?.duration)
-                }
-                valueLabelDisplay={"off"}
-                disableSwap={true}
-              />
+              {!isLive ? (
+                <Slider
+                  type="range"
+                  min={0}
+                  max={1000}
+                  value={Number((state?.time / state?.duration) * 1000) || 0}
+                  step={0.05}
+                  onChange={(e) =>
+                    controls.seekTo(
+                      Math.floor((e.target.value / 1000) * state?.duration)
+                    )
+                  }
+                  valueLabelDisplay={"off"}
+                />
+              ) : (
+                <Slider
+                  type="range"
+                  max={1}
+                  value={1}
+                  disabled={true}
+                  color="secondary"
+                />
+              )}
+
               {/* <input
                 type="range"
                 min={0}
@@ -262,16 +295,49 @@ const FullScreenPlayer = () => {
                   />
                 </div>
                 <div className="flex flex-row items-center justify-start gap-3 font-semibold">
-                  <span>
-                    {state?.time ? format(state?.time * 1000) : "0:00"} /{" "}
-                    {state?.duration ? format(state?.duration * 1000) : "0:00"}
-                  </span>
-                  <span className="max-lg:hidden">•</span>
-                  <span className="max-lg:hidden">The Explode</span>
+                  {!isLive ? (
+                    <>
+                      <span>
+                        {state?.time ? format(state?.time * 1000) : "0:00"} /{" "}
+                        {state?.duration
+                          ? format(state?.duration * 1000)
+                          : "0:00"}
+                      </span>
+                      <span className="max-lg:hidden">•</span>
+                      <span className="max-lg:hidden">The Explode</span>
+                    </>
+                  ) : (
+                    <div className=" bg-red-600/80 h-10 pl-6 pr-6  flex flex-row items-center justify-center rounded-xl gap-2">
+                      <span className="text-xl font-bold leading-none uppercase">
+                        CANLI
+                      </span>
+                      <span className="w-3 h-3 rounded-full bg-white" />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="h-full flex-1  flex flex-row items-center justify-end gap-2">
                 <div className="h-full flex flex-row items-center justify-end gap-2">
+                  {internalPlayer?.getVariantTracks().map((track, key) => (
+                    <ControlsIcon
+                      key={key}
+                      title={JSON.stringify(track)}
+                      icon={
+                        <div
+                          className={
+                            track?.active &&
+                            "w-full h-full bg-red-700 flex items-center justify-center rounded-lg p-3"
+                          }
+                        >
+                          {track?.height}
+                        </div>
+                      }
+                      onClick={() => {
+                        console.log(track?.height + "kalite değiştirildi");
+                        internalPlayer?.selectVariantTrack(track);
+                      }}
+                    />
+                  ))}
                   <ControlsIcon
                     title={"Closed Captions"}
                     icon={<ClosedCaptions />}

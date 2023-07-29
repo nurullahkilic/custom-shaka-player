@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import shaka from "shaka-player";
+import muxjs from "mux.js";
 
 import { usePlayerState } from "../context/usePlayerState";
 
@@ -58,6 +59,7 @@ const useShakaPlayer = ({
     player.configure("manifest.defaultPresentationDelay", 0);
 
     // Attach player to the window to make it easy to access in the JS console.
+    window.muxjs = muxjs;
     window.player = player;
 
     setInternalPlayer(player);

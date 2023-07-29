@@ -58,6 +58,7 @@
 
 .MuiSlider-thumb {
   color: #ffffff !important;
+  color: red !important;
 }
 
 .MuiSlider-thumb:hover {
