@@ -118,7 +118,7 @@ const FullScreenPlayer = () => {
     >
       <div className="absolute inset-0 aspect-video h-full w-full flex items-center justify-center z-0">
         <video
-          className="aspect-video min-h-full min-w-full"
+          className="aspect-video max-h-screen h-full max-w-full w-full"
           onLoadedMetadata={handleLoadedMetadata}
           autoPlay={false}
           controls={false}
@@ -137,7 +137,7 @@ const FullScreenPlayer = () => {
                     {video?.title}
                   </p>
                   <h6 className="text-base text-zinc-300 leading-none">
-                    Season 1 Episode 12{isLive ? "canlı" : "VOD"}
+                    {isLive ? "CANLI" : "VOD"}
                   </h6>
                 </div>
               </div>
