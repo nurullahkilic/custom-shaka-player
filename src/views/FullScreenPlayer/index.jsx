@@ -123,6 +123,7 @@ const FullScreenPlayer = () => {
           autoPlay={false}
           controls={false}
           ref={videoRef}
+          playsInline={true}
         ></video>
       </div>
       <div className="absolute inset-0">
