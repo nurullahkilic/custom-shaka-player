@@ -16,7 +16,6 @@ import useVideoControls from "../../hooks/useVideoControls";
 import useShakaPlayer from "../../hooks/useShakaPlayer";
 import useHlsPlayer from "../../hooks/useHlsPlayer";
 
-import { videos } from "./videos";
 import format from "format-duration";
 
 import { usePlayerState } from "../../context/usePlayerState";
@@ -40,7 +39,7 @@ import {
 } from "../../icons";
 
 
-const FullScreenPlayer = () => {
+const FullScreenPlayer = ({ video }) => {
   const [isLive, setIsLive] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -55,8 +54,6 @@ const FullScreenPlayer = () => {
 
   const handle = useFullScreenHandle();
 
-  let videoId = useQuery().get("v") || 4135028;
-  const video = videos.find((video) => video.id === Number(videoId));
 
   let urlParam = useQuery().get("url");
   let videoURL;
@@ -165,7 +162,6 @@ const FullScreenPlayer = () => {
         <video
           className="aspect-video max-h-screen h-full max-w-full w-full"
           onLoadedMetadata={handleLoadedMetadata}
-          playsInline
           // autoPlay={isLive ? true : false}
           autoPlay={true}
           controls={false}
