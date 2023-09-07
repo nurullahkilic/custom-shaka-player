@@ -110,8 +110,17 @@ const useShakaPlayer = ({
         },
       });
 
+      // player.configure(
+      //   "abr.defaultBandwidthEstimate",
+      //   abr.defaultBandwidthEstimate
+      // );
+
       initSubtitle(player);
       initAd(player);
+
+      player.addEventListener("buffering", function (event) {
+        console.log("buffering ", event.buffering);
+      });
 
       // Enable text track
       // player.setTextTrackVisibility(true);

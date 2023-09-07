@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   FullScreen as FullScreeenWrapper,
   useFullScreenHandle,
@@ -38,11 +38,11 @@ import {
   VolumeHigh,
   VolumeLow,
 } from "../../icons";
-import { document } from "postcss";
+
 
 const FullScreenPlayer = () => {
   const [isLive, setIsLive] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -61,36 +61,16 @@ const FullScreenPlayer = () => {
   let urlParam = useQuery().get("url");
   let videoURL;
 
-  // let videoRef;
   if (urlParam === null) {
     videoURL = video?.sources?.[0];
   } else {
     videoURL = urlParam;
   }
 
-  // if (urlParam?.includes(".m3u8") || video?.sources?.[0].includes(".m3u8")) {
-  //   [videoRef] = useHlsPlayer({
-  //     manifestUri: videoURL,
-  //     poster: video?.thumb,
-  //   });
-  // } else {
   const [videoRef] = useShakaPlayer({
     manifestUri: videoURL,
     poster: video?.thumb,
   });
-  // }
-
-  // if (video?.sources?.[0].includes(".m3u8")) {
-  //   [videoRef] = useHlsPlayer({
-  //     manifestUri: videoURL,
-  //     poster: video?.thumb,
-  //   });
-  // } else {
-  //   [videoRef] = useShakaPlayer({
-  //     src: videoURL,
-  //     poster: video?.thumb,
-  //   });
-  // }
 
   const [state, controls] = useVideoControls({ ref: videoRef });
 
@@ -100,39 +80,107 @@ const FullScreenPlayer = () => {
   };
 
   useEffect(() => {
-    console.log("canlıdır ya da değildir!");
+    console.log("canlıdır ya da değildir!: ", internalPlayer?.isLive() ? "canlıymış" : "değilmiş");
     if (internalPlayer?.isLive() === true) setIsLive(true);
   }, [internalPlayer?.isLive()]);
 
-  const getQuality = () => {
-    internalPlayer?.getVariantTracks().forEach((track) => {
-      console.log(track.height);
-    });
-    internalPlayer?.selectVariantTrack(internalPlayer?.getVariantTracks()[4]);
-  };
+  const topSideRef = useRef(null);
+  const bottomSideRef = useRef(null);
+  const [isHover, setIsHover] = useState(false);
+
+  useEffect(() => {
+    let timeout = null;
+    const duration = 1200;
+    topSideRef.current.onmouseenter = () => {
+      clearTimeout(timeout);
+      setIsHover(true);
+      window.document.body.style.cursor = "auto";
+    };
+    topSideRef.current.onmouseleave = () => {
+      timeout = setTimeout(() => {
+        setIsHover(false);
+        if (handle.active) window.document.body.style.cursor = "none";
+      }, duration);
+    };
+    bottomSideRef.current.onmouseenter = () => {
+      clearTimeout(timeout);
+      setIsHover(true);
+      window.document.body.style.cursor = "auto";
+    };
+    bottomSideRef.current.onmouseleave = () => {
+      timeout = setTimeout(() => {
+        setIsHover(false);
+        if (handle.active) window.document.body.style.cursor = "none";
+      }, duration);
+    };
+    window.document.body.onmousemove = () => {
+      window.document.body.style.cursor = "auto";
+      timeout = setTimeout(() => {
+        if (handle.active) window.document.body.style.cursor = "none";
+      }, duration);
+    };
+  }, [topSideRef, bottomSideRef]);
+
+  useEffect(() => {
+    let timeout = null;
+    if (!isHover && handle.active) {
+      timeout = setTimeout(() => {
+        window.document.body.style.cursor = "none";
+      }, 1000);
+    }
+    handle.node.onmousemove = () => {
+      window.document.body.style.cursor = "auto";
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        if (handle.active) window.document.body.style.cursor = "none";
+      }, 1000);
+    };
+    handle.node.current.onmousemove = () => {
+      if (isHover) return;
+      console.log("mouse enter node");
+      setIsHover(true);
+    };
+    handle.node.current.onmouseleave = () => {
+      console.log("mouse leave node");
+      setIsHover(false);
+    };
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isHover]);
+
+  // const getQuality = () => {
+  //   internalPlayer?.getVariantTracks().forEach((track) => {
+  //     console.log(track.height);
+  //   });
+  //   internalPlayer?.selectVariantTrack(internalPlayer?.getVariantTracks()[4]);
+  // };
 
   return (
     <FullScreeenWrapper
       handle={handle}
       className="relative w-full h-full flex flex-col items-center justify-center gap-6 bg-black"
     >
-      <div className="absolute inset-0 aspect-video h-full w-full flex items-center justify-center z-0">
-        <div
-          id="ad-container"
-          className="absolute inset-0 aspect-video max-h-screen h-full max-w-full w-full z-50 "
-        ></div>
+      <div className="absolute inset-0 aspect-video h-full w-full flex items-center justify-center z-0 group">
         <video
           className="aspect-video max-h-screen h-full max-w-full w-full"
           onLoadedMetadata={handleLoadedMetadata}
-          autoPlay={false}
+          playsInline
+          // autoPlay={isLive ? true : false}
+          autoPlay={true}
           controls={false}
           ref={videoRef}
           playsInline={true}
         ></video>
       </div>
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 transition-opacity">
         {/* Top Side */}
-        <div className="absolute top-0 left-0 right-0 w-full h-[15%] bg-gradient-to-b from-[rgba(0,0,0,.75)] flex flex-col items-center justify-end ">
+        <div
+          ref={topSideRef}
+          className={`${
+            isHover ? "opacity-100" : "opacity-0"
+          } transition-opacity absolute top-0 left-0 right-0 w-full h-[15%] bg-gradient-to-b from-[rgba(0,0,0,.75)] flex flex-col items-center justify-end`}
+        >
           <div className="w-full h-full flex flex-col items-start justify-start px-2 text-white">
             <div className="w-full flex flex-row items-start justify-between pt-4 pl-4">
               <div className="h-full flex-1  flex flex-row items-start justify-start gap-4">
@@ -223,7 +271,12 @@ const FullScreenPlayer = () => {
         </div>
 
         {/* Bottom Side */}
-        <div className="absolute bottom-0 left-0 right-0 w-full h-[18%] bg-gradient-to-t from-[rgba(0,0,0,.65)] flex flex-col items-center justify-end ">
+        <div
+          ref={bottomSideRef}
+          className={`${
+            isHover ? "opacity-100" : "opacity-0"
+          } transition-opacity absolute bottom-0 left-0 right-0 w-full h-[18%] bg-gradient-to-t from-[rgba(0,0,0,.65)] flex flex-col items-center justify-end`}
+        >
           <div className="w-full h-full flex flex-col items-center justify-end px-3 text-white">
             <div id="subtitle-container"></div>
             <div className="w-full px-4">
@@ -323,26 +376,35 @@ const FullScreenPlayer = () => {
               </div>
               <div className="h-full flex-1  flex flex-row items-center justify-end gap-2">
                 <div className="h-full flex flex-row items-center justify-end gap-2">
-                  {internalPlayer?.getVariantTracks().map((track, key) => (
-                    <ControlsIcon
-                      key={key}
-                      title={JSON.stringify(track)}
-                      icon={
-                        <div
-                          className={
-                            track?.active &&
-                            "w-full h-full bg-red-700 flex items-center justify-center rounded-lg p-3"
-                          }
-                        >
-                          {track?.height}
-                        </div>
-                      }
-                      onClick={() => {
-                        console.log(track?.height + "kalite değiştirildi");
-                        internalPlayer?.selectVariantTrack(track);
-                      }}
-                    />
-                  ))}
+                  <div className="max-w-[300px] flex flex-row items-center justify-center gap-2 overflow-x-auto max-md:max-w-[120px]">
+                    {internalPlayer?.getVariantTracks().map((track, key) => (
+                      <ControlsIcon
+                        key={key}
+                        title={
+                          <code>
+                            <pre>
+                              {JSON.stringify(track, null, 2)}
+                            </pre>
+                          </code>
+                        }
+                        icon={
+                          <div
+                            className={
+                              track?.active &&
+                              "w-full h-full bg-red-700 flex items-center justify-center rounded-lg p-3 "
+                            }
+                          >
+                            {track?.height}
+                          </div>
+                        }
+                        onClick={() => {
+                          console.log(track?.height + "kalite değiştirildi");
+                          internalPlayer?.selectVariantTrack(track);
+                        }}
+                      />
+                    ))}
+                  </div>
+
                   <ControlsIcon
                     title={"Closed Captions"}
                     icon={<ClosedCaptions />}
@@ -380,7 +442,7 @@ const ControlsIcon = ({ title, icon, onClick, handle, ...props }) => {
     <Tooltip title={title} placement="top">
       <button
         onClick={onClick}
-        className="aspect-square w-[42px] flex items-center justify-center rounded cursor-pointer hover:bg-white/20 "
+        className="aspect-square w-[42px] max-w-full h-full flex items-center justify-center rounded cursor-pointer hover:bg-white/20 "
         {...props}
       >
         {icon}
