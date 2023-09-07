@@ -5,10 +5,29 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"
+    ></script>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- <script type="text/javascript">
+      console.log("loading IMA googletag");
+      var script_tag = document.createElement("script");
+      script_tag.setAttribute("type", "text/javascript");
+      script_tag.setAttribute(
+        "src",
+        "//imasdk.googleapis.com/js/sdkloader/ima3.js"
+      );
+      script_tag.onerror = function () {
+        alert("Loading failed!");
+      };
+      document.getElementsByTagName("head")[0].appendChild(script_tag);
+    </script> -->
   </body>
 </html>

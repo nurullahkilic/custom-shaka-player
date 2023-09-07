@@ -117,6 +117,10 @@ const FullScreenPlayer = () => {
       className="relative w-full h-full flex flex-col items-center justify-center gap-6 bg-black"
     >
       <div className="absolute inset-0 aspect-video h-full w-full flex items-center justify-center z-0">
+        <div
+          id="ad-container"
+          className="absolute inset-0 aspect-video max-h-screen h-full max-w-full w-full z-50 "
+        ></div>
         <video
           className="aspect-video max-h-screen h-full max-w-full w-full"
           onLoadedMetadata={handleLoadedMetadata}
