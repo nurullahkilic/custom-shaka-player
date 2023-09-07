@@ -10,6 +10,7 @@ const useShakaPlayer = ({
 }) => {
   const videoRef = useRef(null);
 
+  const internalPlayer = usePlayerState((state) => state.internalPlayer);
   const setInternalPlayer = usePlayerState((state) => state.setInternalPlayer);
 
   useEffect(() => {
@@ -34,6 +35,37 @@ const useShakaPlayer = ({
     player.selectTextTrack(textTracks?.[0]);
 
     console.log("textCuesContainer.isTextVisible ", textDisplayer);
+  };
+
+  const initAd = (player) => {
+    const container = document.getElementById("ad-container");
+    const video = videoRef?.current;
+
+    // Create the ad display container.
+    // const adDisplayContainer = new google.ima.AdDisplayContainer(
+    //   document.getElementById("ad-container"),
+    //   videoRef.current
+    // );
+
+    // Initialize the container. Must be done via a user action on mobile devices.
+    // adDisplayContainer.initialize();
+
+    const adManager = player.getAdManager();
+    adManager.initClientSide(container, video);
+
+    // Create ads loader.
+    // const adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+
+    // Request video ads.
+    const adsRequest = new google.ima.AdsRequest();
+    // Your ad tag url should go here. We are using a sample ad tag from the
+    // IMA HTML5 SDK implementation guide for this tutorial.
+    adsRequest.adTagUrl =
+      "https://pubads.g.doubleclick.net/gampad/ads?" +
+      "sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&" +
+      "impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&" +
+      "cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=";
+    adManager.requestClientSideAds(adsRequest);
   };
 
   const initApp = () => {
@@ -84,6 +116,7 @@ const useShakaPlayer = ({
       // );
 
       initSubtitle(player);
+      initAd(player);
 
       player.addEventListener("buffering", function (event) {
         console.log("buffering ", event.buffering);

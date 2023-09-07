@@ -170,6 +170,7 @@ const FullScreenPlayer = () => {
           autoPlay={true}
           controls={false}
           ref={videoRef}
+          playsInline={true}
         ></video>
       </div>
       <div className="absolute inset-0 transition-opacity">
